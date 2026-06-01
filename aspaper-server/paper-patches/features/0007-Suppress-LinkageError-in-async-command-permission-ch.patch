@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: vulzen <vulzen@vulzen.dev>
+Date: Tue, 2 Jun 2026 00:42:05 +0300
+Subject: [PATCH] Suppress LinkageError in async command permission check
+
+
+diff --git a/src/main/java/io/papermc/paper/command/brigadier/bukkit/BukkitCommandNode.java b/src/main/java/io/papermc/paper/command/brigadier/bukkit/BukkitCommandNode.java
+index 5c52b1563d20d7e977a5bb958c18b19dec5c365a..f12578b8e8d81738eb0d17e47aacb1a7b5d1b44b 100644
+--- a/src/main/java/io/papermc/paper/command/brigadier/bukkit/BukkitCommandNode.java
++++ b/src/main/java/io/papermc/paper/command/brigadier/bukkit/BukkitCommandNode.java
+@@ -38,7 +38,14 @@ public class BukkitCommandNode extends LiteralCommandNode<CommandSourceStack> {
+                 if (source instanceof net.minecraft.commands.CommandSourceStack commandSourceStack && commandSourceStack.source == CommandSource.NULL) {
+                     return true;
+                 } else {
+-                    return command.testPermissionSilent(source.getSender());
++                    try {
++                        return command.testPermissionSilent(source.getSender());
++                    } catch (final LinkageError e) {
++                        // Plugin classloader (e.g. runtime-downloaded LiteCommands) can fail to resolve
++                        // package-private support classes on async command builder threads. Treat this
++                        // as "command is visible" -- the real permission check still runs on execute.
++                        return true;
++                    }
+                 }
+             },
+             null, null, false
