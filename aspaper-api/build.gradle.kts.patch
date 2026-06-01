@@ -1,10 +1,17 @@
 --- a/paper-api/build.gradle.kts
 +++ b/paper-api/build.gradle.kts
-@@ -41,6 +_,7 @@
+@@ -41,6 +_,14 @@
  }
  
  dependencies {
 +    api(project(":api")) //ASP
++    // Kotlin (Server Runtime) //ASP
++    val kotlinVersion = "2.3.0" //ASP
++    val coroutinesVersion = "1.10.2" //ASP
++    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion") //ASP
++    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion") //ASP
++    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion") //ASP
++    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutinesVersion") //ASP
      // api dependencies are listed transitively to API consumers
      api("com.google.guava:guava:33.3.1-jre")
      api("com.google.code.gson:gson:2.11.0")
